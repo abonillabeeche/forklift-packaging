@@ -67,7 +67,10 @@ ENV LIBGUESTFS_BACKEND=direct
 # The appliance is assembled by supermin from host packages, so install the
 # full set (recommends included): with a minimal set inspection fails, e.g.
 # "inspect_os: execvp: file: No such file or directory".
-RUN zypper -n ar -f ${EXTRA_REPO} harvester-extra && \
+# harvester-extra is only for virtio-win. It also carries SLE 15 SP7 builds of
+# virt-v2v/libguestfs that outrank Tumbleweed's by version but cannot install
+# on it (libxml2.so.2), so give it a lower priority than the base repos.
+RUN zypper -n ar -f -p 150 ${EXTRA_REPO} harvester-extra && \
     zypper -n --gpg-auto-import-keys ref && \
     zypper -n in \
         virt-v2v virtio-win libvirt-client qemu-x86 qemu-img qemu-tools \
